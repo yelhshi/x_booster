@@ -199,7 +199,7 @@ def main():
 
     missing = []
     if not twitterapi:
-        missing.append("twitterapi")
+        missing.append("TWITTERI_API")
     if not smtp_user:
         missing.append("SMTP_USER")
     if not smtp_pass:
