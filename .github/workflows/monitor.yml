@@ -5,7 +5,7 @@ on:
     # 每 8 小时检查一次 (UTC 时间)
     # 免费 API 每月 100 次请求，每天 3 次 ≈ 每月 90 次，留有富余
     # 可根据需要调整频率，但注意不要超过 X API 免费额度
-    - cron: "0 */8 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:  # 允许手动触发
     inputs:
       target:
