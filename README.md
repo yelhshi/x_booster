@@ -37,6 +37,7 @@ monitor.py ──► X API v2 ──► 获取最近推文
 3. 选择 "邮件" + "其他"，生成一个 16 位密码，记录下来
 4. 这个密码就是 `SMTP_PASS`
 
+
 > QQ 邮箱、163 邮箱等也支持 SMTP，对应修改 SMTP 服务器地址即可。
 
 ### 第 3 步: 推送到 GitHub 并配置 Secrets
@@ -50,7 +51,7 @@ git init
 git add .
 git commit -m "初始化 X 监控脚本"
 git branch -M main
-git remote add origin git@github.com:你的用户名/仓库名.git
+git remote add origin git@github.com:yelhshi/x_booster.git
 git push -u origin main
 ```
 

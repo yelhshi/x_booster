@@ -51,19 +51,22 @@ def save_state(state: dict) -> None:
         json.dump(state, f, indent=2, ensure_ascii=False)
 
 
-def get_user_id(bearer_token: str, username: str) -> str:
-    """通过用户名获取 X 用户 ID"""
-    url = f"{API_BASE}/users/by/username/{username}"
-    headers = {"Authorization": f"Bearer {bearer_token}"}
-    resp = requests.get(url, headers=headers, timeout=15)
+API_BASE = "https://api.twitterapi.io"
+
+
+def get_user_id(api_key: str, username: str) -> str:
+    """通过用户名获取用户信息（主要用来校验用户名是否存在）"""
+    url = f"{API_BASE}/twitter/user/info"
+    headers = {"X-API-Key": api_key}
+    params = {"userName": username}
+    resp = requests.get(url, headers=headers, params=params, timeout=15)
 
     if resp.status_code == 429:
-        retry_after = int(resp.headers.get("Retry-After", 60))
-        print(f"⚠️  触发速率限制，{retry_after} 秒后可重试")
+        print("⚠️  触发速率限制，请稍后重试")
         sys.exit(1)
 
     if resp.status_code != 200:
-        print(f"❌ 获取用户 ID 失败: HTTP {resp.status_code}")
+        print(f"❌ 获取用户信息失败: HTTP {resp.status_code}")
         print(f"   响应: {resp.text[:300]}")
         sys.exit(1)
 
@@ -77,23 +80,27 @@ def get_user_id(bearer_token: str, username: str) -> str:
     return user_id
 
 
-def get_recent_tweets(bearer_token: str, user_id: str) -> list[dict]:
+def get_recent_tweets(api_key: str, username: str) -> list[dict]:
     """获取用户最近的推文"""
-    url = f"{API_BASE}/users/{user_id}/tweets"
-    params = {
-        "max_results": MAX_TWEETS_PER_CHECK,
-        "tweet.fields": "created_at,text",
-        "exclude": "retweets,replies",  # 只看原创推文，去掉这两项可看全部
-    }
-    headers = {"Authorization": f"Bearer {bearer_token}"}
+    url = f"{API_BASE}/twitter/user/last_tweets"
+    headers = {"X-API-Key": api_key}
+    params = {"userName": username}
     resp = requests.get(url, headers=headers, params=params, timeout=15)
+
+    if resp.status_code == 429:
+        print("⚠️  触发速率限制，请稍后重试")
+        sys.exit(1)
 
     if resp.status_code != 200:
         print(f"❌ 获取推文失败: HTTP {resp.status_code}")
         print(f"   响应: {resp.text[:300]}")
         sys.exit(1)
 
-    tweets = resp.json().get("data", [])
+    payload = resp.json().get("data", {})
+    # 注意：不同版本的返回结构可能是 data 直接是 list，也可能是 {"tweets": [...]}
+    tweets = payload.get("tweets", payload) if isinstance(payload, dict) else payload
+    tweets = tweets[:MAX_TWEETS_PER_CHECK]
+
     print(f"📋 获取到 {len(tweets)} 条最近推文")
     return tweets
 
