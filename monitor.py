@@ -190,7 +190,7 @@ def main():
     keywords = [kw.strip() for kw in raw_filter.split(",") if kw.strip()]
 
     # --- 读取环境变量 ---
-    twitterapi = os.getenv("twitteri_api")
+    twitterapi = os.getenv("TWITTERI_API")
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", "465"))
     smtp_user = os.getenv("SMTP_USER")
