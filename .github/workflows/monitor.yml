@@ -37,7 +37,7 @@ jobs:
 
       - name: 运行监控
         env:
-          X_BEARER_TOKEN: ${{ secrets.TWITTERI_API }}
+          TWITTERI_API: ${{ secrets.TWITTERI_API }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
