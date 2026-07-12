@@ -43,6 +43,7 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          DEFAULT_FILTER_KEYWORDS: "Booster,#币安钱包"
         run: |
           TARGET="${{ github.event.inputs.target }}"
           if [ -z "$TARGET" ]; then
@@ -54,8 +55,8 @@ jobs:
           MANUAL_FILTER="${{ github.event.inputs.filter_keywords }}"
           if [ -n "$MANUAL_FILTER" ]; then
             FILTER_ARG="--filter $MANUAL_FILTER"
-          elif [ -n "$FILTER_KEYWORDS" ]; then
-            FILTER_ARG="--filter $FILTER_KEYWORDS"
+          elif [ -n "$DEFAULT_FILTER_KEYWORDS" ]; then
+            FILTER_ARG="--filter $DEFAULT_FILTER_KEYWORDS"
           fi
 
           python monitor.py --target "$TARGET" $FILTER_ARG
