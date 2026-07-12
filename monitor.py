@@ -54,30 +54,6 @@ def save_state(state: dict) -> None:
 API_BASE = "https://api.twitterapi.io"
 
 
-def get_user_id(api_key: str, username: str) -> str:
-    """通过用户名获取用户信息（主要用来校验用户名是否存在）"""
-    url = f"{API_BASE}/twitter/user/info"
-    headers = {"X-API-Key": api_key}
-    params = {"userName": username}
-    resp = requests.get(url, headers=headers, params=params, timeout=15)
-
-    if resp.status_code == 429:
-        print("⚠️  触发速率限制，请稍后重试")
-        sys.exit(1)
-
-    if resp.status_code != 200:
-        print(f"❌ 获取用户信息失败: HTTP {resp.status_code}")
-        print(f"   响应: {resp.text[:300]}")
-        sys.exit(1)
-
-    data = resp.json().get("data", {})
-    user_id = data.get("id")
-    if not user_id:
-        print(f"❌ 未找到用户 @{username}")
-        sys.exit(1)
-
-    print(f"✅ 找到用户 @{username}，ID: {user_id}")
-    return user_id
 
 
 def get_recent_tweets(api_key: str, username: str) -> list[dict]:
@@ -214,7 +190,7 @@ def main():
     keywords = [kw.strip() for kw in raw_filter.split(",") if kw.strip()]
 
     # --- 读取环境变量 ---
-    bearer_token = os.getenv("X_BEARER_TOKEN")
+    twitterapi = os.getenv("twitteri_api")
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", "465"))
     smtp_user = os.getenv("SMTP_USER")
@@ -222,8 +198,8 @@ def main():
     notify_email = os.getenv("NOTIFY_EMAIL")
 
     missing = []
-    if not bearer_token:
-        missing.append("X_BEARER_TOKEN")
+    if not twitterapi:
+        missing.append("twitterapi")
     if not smtp_user:
         missing.append("SMTP_USER")
     if not smtp_pass:
@@ -242,11 +218,10 @@ def main():
         print(f"   🔎 过滤关键词 ({logic}): {keywords}")
     print(f"   时间: {datetime.now(timezone.utc).isoformat()}")
 
-    # 1. 获取用户 ID
-    user_id = get_user_id(bearer_token, username)
+
 
     # 2. 获取最近推文
-    tweets = get_recent_tweets(bearer_token, user_id)
+    tweets = get_recent_tweets(twitterapi, username)
 
     # 3. 加载状态
     state = load_state()
