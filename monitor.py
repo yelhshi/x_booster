@@ -248,7 +248,7 @@ def main():
     new_tweets = find_new_tweets(tweets, last_seen_id)
 
     if not new_tweets:
-        print(f"✅ 没有新推文 (上次 ID: {last_seen_id[:8]}...)")
+        print(f"✅ 没有新推文 (上次 ID: {last_seen_id}...)")
     else:
         # 关键词过滤
         matched_tweets: list[tuple[dict, list[str]]] = []
