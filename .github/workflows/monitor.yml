@@ -46,7 +46,7 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target }}"
           if [ -z "$TARGET" ]; then
-            TARGET="请替换为要监控的用户名"
+            TARGET="binancezh"
           fi
 
           # 构建过滤参数（关键词已用逗号分隔，直接传递）
